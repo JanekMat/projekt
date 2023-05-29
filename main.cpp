@@ -1,3 +1,5 @@
+
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -10,45 +12,112 @@ using namespace std;
 class CustomRectangleShape : public sf::RectangleShape
 {
 private:
-    int main_rect_speed = 0;
-
+    int main_rect_speed1x = 0;
+    int main_rect_speed1y = 0;
+    int main_rect_speed2x = 0;
+    int main_rect_speed2y = 0;
 public:
     bool is_selected = false;
 
     CustomRectangleShape(const sf::Vector2f& size) : sf::RectangleShape(size) {}
 
-    void animate(const sf::Time& elapsed)
+    void animate1(const sf::Time& elapsed)
     {
-        main_rect_speed = 0;
+        main_rect_speed1x = 0;
+        main_rect_speed1y = 0;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
         {
-            if (is_selected)
+            if (is_selected && getPosition().x > 10.0)
             {
-                main_rect_speed = -100;
-                std::cout << "Left key is pressed" << std::endl;
+                main_rect_speed1x = -200;
+                std::cout << "Left is pressed" << std::endl;
             }
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         {
-            if (is_selected)
+            if (is_selected && getPosition().x + getSize().x < 710.0)
             {
-                main_rect_speed = 100;
-                std::cout << "Right key is pressed" << std::endl;
+                main_rect_speed1x = 200;
+                std::cout << "Right is pressed" << std::endl;
             }
         }
-        move(sf::Vector2f(main_rect_speed * elapsed.asSeconds(), 0));
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            if (is_selected && getPosition().y > 700.0)
+            {
+                main_rect_speed1y = -100;
+                std::cout << "Up is pressed" << std::endl;
+            }
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            if (is_selected && getPosition().y + getSize().y < 900.0)
+            {
+                main_rect_speed1y = 100;
+                std::cout << "Down is pressed" << std::endl;
+            }
+        }
+        move(sf::Vector2f(main_rect_speed1x * elapsed.asSeconds(), main_rect_speed1y * elapsed.asSeconds()));
+    }
+
+    void animate2(const sf::Time& elapsed)
+    {
+        main_rect_speed2x = 0;
+        main_rect_speed2y = 0;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        {
+            if (is_selected && getPosition().x > 10.0)
+            {
+                main_rect_speed2x = -200;
+                std::cout << "A is pressed" << std::endl;
+            }
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        {
+            if (is_selected && getPosition().x + getSize().x < 710.0)
+            {
+                main_rect_speed2x = 200;
+                std::cout << "D is pressed" << std::endl;
+            }
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        {
+            if (is_selected && getPosition().y > 0.0)
+            {
+                main_rect_speed2y = -100;
+                std::cout << "W is pressed" << std::endl;
+            }
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        {
+            if (is_selected && getPosition().y + getSize().y < 200.0)
+            {
+                main_rect_speed2y = 100;
+                std::cout << "S is pressed" << std::endl;
+            }
+        }
+        move(sf::Vector2f(main_rect_speed2x * elapsed.asSeconds(), main_rect_speed2y * elapsed.asSeconds()));
     }
 };
 
 class HitRectangleShape : public sf::RectangleShape
 {
 private:
+    bool is_visible = true;
     bool is_destroyed = false;
     int life = 0;
 
 public:
     HitRectangleShape(const sf::Vector2f& size) : sf::RectangleShape(size) {}
+
+    sf::FloatRect getGlobalBounds() const
+    {
+        return getTransform().transformRect(getLocalBounds());
+    }
 
     int getLife() const {
         return life;
@@ -62,7 +131,9 @@ public:
 
     void setColorByLife()
     {
-        if (life == 1)
+        if (life == 0)
+            setFillColor(sf::Color::Black);
+        else if (life == 1)
             setFillColor(sf::Color::Green);
         else if (life == 2)
             setFillColor(sf::Color::Yellow);
@@ -90,6 +161,11 @@ public:
         else if (life == 1)
         {
             is_destroyed = true;
+            setColorByLife();
+        }
+        else if (life == 0)
+        {
+            setColorByLife();
         }
     }
 };
@@ -127,9 +203,11 @@ bool checkCollision(const sf::CircleShape& circle, const sf::RectangleShape& rec
     return circleBounds.intersects(rectangleBounds);
 }
 
+
+
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1330, 820), "My window");
+    sf::RenderWindow window(sf::VideoMode(930, 900), "My window");
 
     sf::Font font;
     if (!font.loadFromFile("arial.ttf"))
@@ -142,60 +220,64 @@ int main()
     text1.setString("Press 'SPACE'");
     text1.setCharacterSize(24);
     text1.setFillColor(sf::Color::White);
-    text1.setPosition(1140, 20);
+    text1.setPosition(740, 20);
 
     sf::Text text2;
     text2.setFont(font);
     text2.setString("to start the game");
     text2.setCharacterSize(24);
     text2.setFillColor(sf::Color::White);
-    text2.setPosition(1125, 50);
+    text2.setPosition(725, 50);
 
-    sf::Text text3;
-    text3.setFont(font);
-    text3.setString("Press 'R' to");
-    text3.setCharacterSize(24);
-    text3.setFillColor(sf::Color::White);
-    text3.setPosition(1160, 100);
+    //    sf::Text text3;
+    //    text3.setFont(font);
+    //    text3.setString("Press 'R' to");
+    //    text3.setCharacterSize(24);
+    //    text3.setFillColor(sf::Color::White);
+    //    text3.setPosition(760, 100);
 
-    sf::Text text4;
-    text4.setFont(font);
-    text4.setString("restart the game");
-    text4.setCharacterSize(24);
-    text4.setFillColor(sf::Color::White);
-    text4.setPosition(1128, 130);
+    //    sf::Text text4;
+    //    text4.setFont(font);
+    //    text4.setString("restart the game");
+    //    text4.setCharacterSize(24);
+    //    text4.setFillColor(sf::Color::White);
+    //    text4.setPosition(728, 130);
 
-    CustomCircleShape circle(20.0);
-    circle.setPosition(530.0, 660.0);
+    CustomCircleShape circle(10.0);
+    circle.setPosition(350.0, 780.0);
     circle.setFillColor(sf::Color(150, 10, 10));
 
-    CustomRectangleShape main_rectangle(sf::Vector2f(100, 10));
-    main_rectangle.setPosition(500.0, 700.0);
-    main_rectangle.setFillColor(sf::Color(100, 50, 250));
+    CustomRectangleShape main_rectangle1(sf::Vector2f(80, 8));
+    main_rectangle1.setPosition(320.0, 800.0);
+    main_rectangle1.setFillColor(sf::Color(100, 50, 250));
 
-    sf::RectangleShape green_rectangle(sf::Vector2f(1330, 820));
+    CustomRectangleShape main_rectangle2(sf::Vector2f(80, 8));
+    main_rectangle2.setPosition(320.0, 100.0);
+    main_rectangle2.setFillColor(sf::Color(100, 50, 250));
+
+    sf::RectangleShape green_rectangle(sf::Vector2f(930, 900));
     green_rectangle.setPosition(0.0, 0.0);
     green_rectangle.setFillColor(sf::Color(2, 222, 6));
 
-    sf::RectangleShape black_rectangle1(sf::Vector2f(1100, 810));
-    black_rectangle1.setPosition(10.0, 10.0);
+    sf::RectangleShape black_rectangle1(sf::Vector2f(700, 910));
+    black_rectangle1.setPosition(10.0, 0.0);
     black_rectangle1.setFillColor(sf::Color(0, 0, 0));
 
-    sf::RectangleShape black_rectangle2(sf::Vector2f(200, 800));
-    black_rectangle2.setPosition(1120.0, 10.0);
+    sf::RectangleShape black_rectangle2(sf::Vector2f(200, 900));
+    black_rectangle2.setPosition(720.0, 10.0);
     black_rectangle2.setFillColor(sf::Color(20, 107, 46));
 
     const int numRectangles = 6;
     const int numColumns = 7;
     const float rectangleWidth = 80.0f;
-    const float rectangleHeight = 40.0f;
-    const float startX = 50.0f;
-    const float startY = 100.0f;
-    const float paddingX = 5.0f;
-    const float paddingY = 5.0f;
+    const float rectangleHeight = 30.0f;
+    const float startX = 65.0f;
+    const float startY = 350.0f;
+    const float paddingX = 4.0f;
+    const float paddingY = 4.0f;
 
     std::vector<std::vector<HitRectangleShape>> hitRectangles(numColumns, std::vector<HitRectangleShape>(numRectangles, HitRectangleShape(sf::Vector2f(rectangleWidth, rectangleHeight))));
-    // Inicjalizacja generatora liczb losowych
+
     srand(time(0));
 
     for (int i = 0; i < numColumns; ++i)
@@ -206,7 +288,6 @@ int main()
             hitRectangle.setSize(sf::Vector2f(rectangleWidth, rectangleHeight));
             hitRectangle.setPosition(startX + i * (rectangleWidth + paddingX), startY + j * (rectangleHeight + paddingY));
 
-            // Losowy kolor i liczba żyć dla HitRectangle
             int randomLife = rand() % 3 + 1;
             hitRectangle.setLife(randomLife);
         }
@@ -230,21 +311,25 @@ int main()
             {
                 circle.setSpeed(abs(circle.getSpeedX()), circle.getSpeedY());
             }
-            else if (currentPosition.x + circle.getGlobalBounds().width > 1110 && circle.getSpeedX() > 0)
+            else if (currentPosition.x + circle.getGlobalBounds().width > 710 && circle.getSpeedX() > 0)
             {
                 circle.setSpeed(-abs(circle.getSpeedX()), circle.getSpeedY());
             }
 
-            if (currentPosition.y < 10 && circle.getSpeedY() < 0)
+            if (currentPosition.y < 0 && circle.getSpeedY() < 0)
             {
-                circle.setSpeed(circle.getSpeedX(), abs(circle.getSpeedY()));
+                circle.setSpeed(0, 0);
             }
-            else if (currentPosition.y + circle.getGlobalBounds().height > 820 && circle.getSpeedY() > 0)
+            else if (currentPosition.y + circle.getGlobalBounds().height > 910 && circle.getSpeedY() > 0)
             {
                 circle.setSpeed(0, 0);
             }
 
-            if (checkCollision(circle, main_rectangle))
+            if (checkCollision(circle, main_rectangle1))
+            {
+                circle.setSpeed(circle.getSpeedX(), -circle.getSpeedY());
+            }
+            else if (checkCollision(circle, main_rectangle2))
             {
                 circle.setSpeed(circle.getSpeedX(), -circle.getSpeedY());
             }
@@ -256,10 +341,41 @@ int main()
                     HitRectangleShape& hitRectangle = hitRectangles[i][j];
                     if (!hitRectangle.isDestroyed() && checkCollision(circle, hitRectangle))
                     {
-                        // Odbicie koła od HitRectangle
-                        circle.setSpeed(circle.getSpeedX(), -circle.getSpeedY());
 
-                        // Zmiana koloru i liczby żyć dla HitRectangle
+                        //circle.setSpeed(circle.getSpeedX(), -circle.getSpeedY());
+
+                        sf::FloatRect circleBounds = circle.getGlobalBounds();
+                        sf::FloatRect rectangleBounds = hitRectangle.getGlobalBounds();
+
+
+
+                        // Kolizja z lewą ścianką prostokąta
+                        if (circleBounds.left + circleBounds.width >= rectangleBounds.left && circleBounds.left < rectangleBounds.left)
+                        {
+                            circle.setSpeed(-circle.getSpeedX(), circle.getSpeedY());
+                        }
+
+                        // Kolizja z prawą ścianką prostokąta
+                        if (circleBounds.left <= rectangleBounds.left + rectangleBounds.width && circleBounds.left + circleBounds.width > rectangleBounds.left + rectangleBounds.width)
+                        {
+                            circle.setSpeed(-circle.getSpeedX(), circle.getSpeedY());
+                        }
+
+                        // Kolizja z górną krawędzią prostokąta
+                        if (circleBounds.top + circleBounds.height >= rectangleBounds.top && circleBounds.top < rectangleBounds.top)
+                        {
+                            circle.setSpeed(circle.getSpeedX(), -circle.getSpeedY());
+                        }
+
+                        // Kolizja z dolną krawędzią prostokąta
+                        if (circleBounds.top <= rectangleBounds.top + rectangleBounds.height && circleBounds.top + circleBounds.height > rectangleBounds.top + rectangleBounds.height)
+                        {
+                            circle.setSpeed(circle.getSpeedX(), -circle.getSpeedY());
+                        }
+
+
+
+
                         if (hitRectangle.getLife() == 3)
                         {
                             hitRectangle.setFillColor(sf::Color(255, 255, 0));
@@ -273,6 +389,7 @@ int main()
                         else if (hitRectangle.getLife() == 1)
                         {
                             hitRectangle.destroy();
+                            hitRectangle.setFillColor(sf::Color::Black);
                         }
                     }
                 }
@@ -290,11 +407,19 @@ int main()
             {
                 if (event.key.code == sf::Keyboard::Left)
                 {
-                    main_rectangle.is_selected = true;
+                    main_rectangle1.is_selected = true;
                 }
                 else if (event.key.code == sf::Keyboard::Right)
                 {
-                    main_rectangle.is_selected = true;
+                    main_rectangle1.is_selected = true;
+                }
+                else if (event.key.code == sf::Keyboard::A)
+                {
+                    main_rectangle2.is_selected = true;
+                }
+                else if (event.key.code == sf::Keyboard::D)
+                {
+                    main_rectangle2.is_selected = true;
                 }
                 else if (event.key.code == sf::Keyboard::Space)
                 {
@@ -302,34 +427,41 @@ int main()
                 }
                 else if (event.key.code == sf::Keyboard::R)
                 {
-                    main_rectangle.setPosition(500.0, 700.0);
-                    circle.setPosition(530.0, 660.0);
-                    circle.setSpeed(100, -100);
-                    shouldMoveCircle = false;
-                    for (int i = 0; i < numColumns; ++i)
-                    {
-                        for (int j = 0; j < numRectangles; ++j)
-                        {
-                            HitRectangleShape& hitRectangle = hitRectangles[i][j];
-                            hitRectangle.setLife(3);
-                        }
-                    }
+//                    main_rectangle1.setPosition(320.0, 800.0);
+//                    main_rectangle2.setPosition(320.0, 100.0);
+//                    circle.setPosition(350.0, 780.0);
+//                    circle.setSpeed(100, -100);
+//                    shouldMoveCircle = false;
+//                    for (int i = 0; i < numColumns; ++i)
+//                    {
+//                        for (int j = 0; j < numRectangles; ++j)
+//                        {
+//                            HitRectangleShape& hitRectangle = hitRectangles[i][j];
+//                            int randomLife = rand() % 3 + 1;
+//                            hitRectangle.setLife(randomLife);
+
+
+//                        }
+//                    }
+                    return 0;
                 }
             }
         }
 
-        main_rectangle.animate(elapsed);
+        main_rectangle1.animate1(elapsed);
+        main_rectangle2.animate2(elapsed);
 
         window.clear(sf::Color::Black);
         window.draw(green_rectangle);
         window.draw(black_rectangle1);
         window.draw(black_rectangle2);
-        window.draw(main_rectangle);
-        window.draw(circle);
+        window.draw(main_rectangle1);
+        window.draw(main_rectangle2);
+
         window.draw(text1);
         window.draw(text2);
-        window.draw(text3);
-        window.draw(text4);
+//        window.draw(text3);
+//        window.draw(text4);
 
         for (int i = 0; i < numColumns; ++i)
         {
@@ -338,18 +470,12 @@ int main()
                 window.draw(hitRectangles[i][j]);
             }
         }
-
+        window.draw(circle);
         window.display();
-    }
 
+    }
     return 0;
 }
-
-
-
-
-
-
 
 
 
