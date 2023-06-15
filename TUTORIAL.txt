@@ -1,0 +1,33 @@
+PONKANOID
+
+Informacje wstępne
+1. W menu wyieramy gre klikając lewym przyciskiem myszy na nazwe
+2. We wszyskich grach gracz1 porusza sie strzałkami a gracz2 wsad
+3. Prostokąt służący do odbijania porusza się w każdym kierunku ale ma swoje granice w których może to robić
+4. Aby zacząć grę należy wciśnąć spacje
+5. Aby zagrać ponownie należy włączyć grę jeszcze raz
+
+O co chodzi w grach?
+
+1. Pong (2 graczy)
+- cel gry - odbicie piłki jak najdłużej
+- z każdym odbiciem jednego z graczy piłka przyśpiesza
+- przegrywa gracz który nie zdąży odbic piłki 
+
+2. Arkanoid (1 gracz)
+- cel gry - zbicie wszystkich bloczków w jak najszybszym czasie
+- bloczki mają 3 stopnie zniszczenia i zmieniają kolory w tej samej zależności
+- gra może być zakończona przedwcześnie jeśli piłka wyleci po za zielone ramki
+
+3. Ponkanoid = Pong + Arkanoid (2 graczy)
+- cel gry - zdobycie więcej punktów niż przeciwnik
+- jest to połaczenie poprzednich dwóch gier
+- uderzenie czerwonego lub żółtego prostokąta - 1 pkt
+- uderzenie zielonego prostokąta - 2 pkt
+- po uderzeniu piłki w zielony prostokąt albo zostaje on zniszcony albo raz na jakis czas może się on zmienić w błękitny 
+- uderzenie niebieskiego prostokąta 20 pkt, znika on po uderzeniu
+- gra może być zakończona przedwcześnie jeśli piłka wyleci po za zielone ramki
+
+Miłego Grania!
+
+
